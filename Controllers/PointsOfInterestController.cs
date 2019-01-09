@@ -160,6 +160,43 @@ namespace CityInfo.API.Controllers
                 return BadRequest(ModelState);
             }
 
+            if (pointOfInterestToPatch.Name == pointOfInterestToPatch.Description)
+            {
+                ModelState.AddModelError("Description", "Name and description cannot be the same");
+            }
+
+            TryValidateModel(pointOfInterestToPatch);
+
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+
+            pointOfInterestFromStore.Name = pointOfInterestToPatch.Name;
+            pointOfInterestFromStore.Description = pointOfInterestToPatch.Description;
+
+            return NoContent();
+        }
+
+        [HttpDelete("api/cities/{cityId}/pointsofinterest/{poiId}")]
+        public IActionResult DeletePointOfInterest(int cityId, int poiId)
+        {
+            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+
+            if (city == null)
+            {
+                return NotFound();
+            }
+
+            var poi = city.PointsOfInterest.FirstOrDefault(p => p.Id == poiId);
+
+            if (poi == null)
+            {
+                return NotFound();
+            }
+
+            city.PointsOfInterest.Remove(poi);
+
             return NoContent();
         }
     }
