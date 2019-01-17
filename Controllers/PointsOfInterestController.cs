@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CityInfo.API.Models;
+using CityInfo.API.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -12,9 +13,12 @@ namespace CityInfo.API.Controllers
     {
         private readonly ILogger<PointsOfInterestController> _logger;
 
-        public PointsOfInterestController(ILogger<PointsOfInterestController> logger)
+        private readonly IMailService _mailerService;
+
+        public PointsOfInterestController(ILogger<PointsOfInterestController> logger, IMailService mailerService)
         {
             _logger = logger;
+            _mailerService = mailerService;
         }
 
         [HttpGet("api/cities/{cityId}/pointsofinterest")]
@@ -214,6 +218,9 @@ namespace CityInfo.API.Controllers
             }
 
             city.PointsOfInterest.Remove(poi);
+
+            // Notify by email of deleted poi
+            _mailerService.Send("PoI deleted", $"{poi.Name} was deleted");
 
             return NoContent();
         }
