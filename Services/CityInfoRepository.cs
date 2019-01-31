@@ -13,6 +13,7 @@ namespace CityInfo.API.Services
         {
             _context = context;
         }
+
         public IEnumerable<City> GetCities()
         {
             return _context.Cities.OrderBy(c => c.Name).ToList();
