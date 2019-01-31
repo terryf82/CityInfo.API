@@ -26,18 +26,20 @@ namespace CityInfo.API.Services
             }
             else
             {
-                return _context.Cities.FirstOrDefault(c => c.Id == cityId).FirstOrDefault();
+                return _context.Cities.FirstOrDefault(c => c.Id == cityId);
             }
         }
 
         public PointOfInterest GetPointOfInterestForCity(int cityId, int poiId)
         {
-            return _context.PointsOfInterest.Where(p => p.CityId == cityId && p.Id == poiId).FirstOrDefault();
+            return _context.PointsOfInterest
+                .Where(p => p.City.Id == cityId && p.Id == poiId).FirstOrDefault();
         }
 
         public IEnumerable<PointOfInterest> GetPointsOfInterestForCity(int cityId)
         {
-            return _context.PointsOfInterest.Where(p => p.CityId == cityId).toList();
+            return _context.PointsOfInterest
+                .Where(p => p.City.Id == cityId).ToList();
         }
     }
 }
