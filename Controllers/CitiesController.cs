@@ -18,17 +18,8 @@ namespace CityInfo.API.Controllers
         [HttpGet("api/cities")]
         public IActionResult GetCities()
         {
-            var results = new List<CityWithoutPointsOfInterestDto>();
-
-            foreach (var cityEntity in  _cityInfoRepository.GetCities())
-            {
-                results.Add(new CityWithoutPointsOfInterestDto
-                {
-                    Id = cityEntity.Id,
-                    Name = cityEntity.Name,
-                    Description = cityEntity.Description
-                });
-            }
+            var cityEntities = _cityInfoRepository.GetCities();
+            var results = AutoMapper.Mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities);
 
             return Ok(results);
         }
@@ -45,34 +36,12 @@ namespace CityInfo.API.Controllers
 
             if (includePointsOfInterest)
             {
-                var cityResult = new CityDto
-                {
-                    Id = city.Id,
-                    Name = city.Name,
-                    Description = city.Description
-                };
-
-                foreach (var poi in city.PointsOfInterest)
-                {
-                    cityResult.PointsOfInterest.Add(new PointOfInterestDto
-                    {
-                        Id = poi.Id,
-                        Name = poi.Name,
-                        Description = poi.Description
-                    });
-                }
-
+                var cityResult = AutoMapper.Mapper.Map<CityDto>(city);
                 return Ok(cityResult);
             }
             else
             {
-                var cityResult = new CityWithoutPointsOfInterestDto
-                {
-                    Id = city.Id,
-                    Name = city.Name,
-                    Description = city.Description
-                };
-
+                var cityResult = AutoMapper.Mapper.Map<CityWithoutPointsOfInterestDto>(city);
                 return Ok(cityResult);
             }
         }

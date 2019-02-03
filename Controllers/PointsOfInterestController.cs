@@ -28,37 +28,17 @@ namespace CityInfo.API.Controllers
         [HttpGet("api/cities/{cityId}/pointsofinterest")]
         public IActionResult GetPointsOfInterest(int cityId)
         {
-            try
-            {                
-                // var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-                var city = _cityInfoRepository.GetCity(cityId, false);
-                if (city == null)
-                {
-                    // _logger.LogInformation($"City with id {cityId} not found");
-                    return NotFound();
-                }
-
-                var pois = _cityInfoRepository.GetPointsOfInterestForCity(cityId);
-                
-                var results = new List<PointOfInterestDto>();
-
-                foreach (var poi in pois)
-                {
-                    results.Add(new PointOfInterestDto()
-                    {
-                        Id = poi.Id,
-                        Name = poi.Name,
-                        Description = poi.Description
-                    });
-                }
-
-                return Ok(results);
-            }
-            catch (Exception ex)
+            var city = _cityInfoRepository.GetCity(cityId, false);
+            if (city == null)
             {
-                _logger.LogCritical($"Exception while getting POIs for city {cityId}", ex);
-                return StatusCode(500, "An error has occurred");
+                return NotFound();
             }
+
+            var pois = _cityInfoRepository.GetPointsOfInterestForCity(cityId);
+            
+            var results = AutoMapper.Mapper.Map<IEnumerable<PointOfInterestDto>>(pois);
+
+            return Ok(results);
         }
 
         [HttpGet("api/cities/{cityId}/pointsofinterest/{poiId}", Name = "GetPointOfInterest")]
@@ -77,13 +57,7 @@ namespace CityInfo.API.Controllers
                 return NotFound();
             }
 
-            var poiResult = new PointOfInterestDto
-            {
-                Id = poi.Id,
-                Name = poi.Name,
-                Description = poi.Description
-            };
-
+            var poiResult = AutoMapper.Mapper.Map<PointOfInterestDto>(poi);
             return Ok(poiResult);
         }
 
