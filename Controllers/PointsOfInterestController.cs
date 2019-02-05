@@ -80,27 +80,26 @@ namespace CityInfo.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-            
+
+            var city = _cityInfoRepository.GetCity(cityId, false);
             if (city == null)
             {
                 return NotFound();
             }
 
-            var maxPointOfInterestId = CitiesDataStore.Current.Cities.SelectMany(
-                c => c.PointsOfInterest).Max(p => p.Id);
+            var finalPointOfInterest = AutoMapper.Mapper.Map<Entities.PointOfInterest>(pointOfInterest);
 
-            var finalPointOfInterest = new PointOfInterestDto()
+            _cityInfoRepository.AddPointOfInterestForCity(cityId, finalPointOfInterest);
+
+            if ( ! _cityInfoRepository.Save())
             {
-                Id = ++maxPointOfInterestId,
-                Name = pointOfInterest.Name,
-                Description = pointOfInterest.Description
-            };
+                return StatusCode(500, "Error handling request");
+            }
 
-            city.PointsOfInterest.Add(finalPointOfInterest);
+            var createdPoi = AutoMapper.Mapper.Map<PointOfInterestDto>(finalPointOfInterest);
 
             return CreatedAtRoute("GetPointOfInterest",
-                new {cityId = city.Id, poiId = finalPointOfInterest.Id}, finalPointOfInterest);
+                new {cityId = city.Id, poiId = createdPoi.Id}, createdPoi);
         }
 
         [HttpPut("api/cities/{cityId}/pointsofinterest/{poiId}")]
