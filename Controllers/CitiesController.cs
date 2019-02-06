@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,16 +11,19 @@ namespace CityInfo.API.Controllers
     {
         private ICityInfoRepository _cityInfoRepository;
 
-        public CitiesController(ICityInfoRepository cityInfoRepository)
+        private IMapper _mapper;
+
+        public CitiesController(ICityInfoRepository cityInfoRepository, IMapper mapper)
         {
             _cityInfoRepository = cityInfoRepository;
+            _mapper = mapper;
         }
 
         [HttpGet("api/cities")]
         public IActionResult GetCities()
         {
             var cityEntities = _cityInfoRepository.GetCities();
-            var results = AutoMapper.Mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities);
+            var results = _mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities);
 
             return Ok(results);
         }
@@ -36,12 +40,12 @@ namespace CityInfo.API.Controllers
 
             if (includePointsOfInterest)
             {
-                var cityResult = AutoMapper.Mapper.Map<CityDto>(city);
+                var cityResult = _mapper.Map<CityDto>(city);
                 return Ok(cityResult);
             }
             else
             {
-                var cityResult = AutoMapper.Mapper.Map<CityWithoutPointsOfInterestDto>(city);
+                var cityResult = _mapper.Map<CityWithoutPointsOfInterestDto>(city);
                 return Ok(cityResult);
             }
         }

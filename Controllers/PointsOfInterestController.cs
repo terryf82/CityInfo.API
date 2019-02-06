@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
 using Microsoft.AspNetCore.JsonPatch;
@@ -18,11 +19,14 @@ namespace CityInfo.API.Controllers
 
         private ICityInfoRepository _cityInfoRepository;
 
-        public PointsOfInterestController(ILogger<PointsOfInterestController> logger, IMailService mailerService, ICityInfoRepository cityInfoRepository)
+        private IMapper _mapper;
+
+        public PointsOfInterestController(ILogger<PointsOfInterestController> logger, IMailService mailerService, ICityInfoRepository cityInfoRepository, IMapper mapper)
         {
             _logger = logger;
             _mailerService = mailerService;
             _cityInfoRepository = cityInfoRepository;
+            _mapper = mapper;
         }
 
         [HttpGet("api/cities/{cityId}/pointsofinterest")]
@@ -36,7 +40,7 @@ namespace CityInfo.API.Controllers
 
             var pois = _cityInfoRepository.GetPointsOfInterestForCity(cityId);
             
-            var results = AutoMapper.Mapper.Map<IEnumerable<PointOfInterestDto>>(pois);
+            var results = _mapper.Map<IEnumerable<PointOfInterestDto>>(pois);
 
             return Ok(results);
         }
@@ -57,7 +61,7 @@ namespace CityInfo.API.Controllers
                 return NotFound();
             }
 
-            var poiResult = AutoMapper.Mapper.Map<PointOfInterestDto>(poi);
+            var poiResult = _mapper.Map<PointOfInterestDto>(poi);
             return Ok(poiResult);
         }
 
@@ -87,7 +91,7 @@ namespace CityInfo.API.Controllers
                 return NotFound();
             }
 
-            var finalPointOfInterest = AutoMapper.Mapper.Map<Entities.PointOfInterest>(pointOfInterest);
+            var finalPointOfInterest = _mapper.Map<Entities.PointOfInterest>(pointOfInterest);
 
             _cityInfoRepository.AddPointOfInterestForCity(cityId, finalPointOfInterest);
 
@@ -96,7 +100,7 @@ namespace CityInfo.API.Controllers
                 return StatusCode(500, "Error handling request");
             }
 
-            var createdPoi = AutoMapper.Mapper.Map<PointOfInterestDto>(finalPointOfInterest);
+            var createdPoi = _mapper.Map<PointOfInterestDto>(finalPointOfInterest);
 
             return CreatedAtRoute("GetPointOfInterest",
                 new {cityId = city.Id, poiId = createdPoi.Id}, createdPoi);
