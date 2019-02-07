@@ -64,13 +64,20 @@ namespace CityInfo.API
 
             app.UseStatusCodePages();
 
-            app.UseMvc();
-
             AutoMapper.Mapper.Initialize(cfg =>
             {
+                // cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestForCreationDto>()
+                    // .ForMember(x => x.Id, opt => opt.Ignore());
                 // cfg.CreateMap<Entities.City, Models.CityWithoutPointsOfInterestDto>();
                 // cfg.CreateMap<Entities.City, Models.CityDto>();
+                cfg.CreateMap<Models.PointOfInterestForCreationDto, Entities.PointOfInterest>()
+                    .ForMember(dest => dest.Id, opt => opt.Ignore());
+                cfg.CreateMap<Models.PointOfInterestForUpdateDto, Entities.PointOfInterest>()
+                    .ForMember(dest => dest.Id, opt => opt.Ignore());
+                cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestForUpdateDto>();
             });
+
+            app.UseMvc();
         }
     }
 }

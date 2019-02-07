@@ -11,19 +11,16 @@ namespace CityInfo.API.Controllers
     {
         private ICityInfoRepository _cityInfoRepository;
 
-        private IMapper _mapper;
-
-        public CitiesController(ICityInfoRepository cityInfoRepository, IMapper mapper)
+        public CitiesController(ICityInfoRepository cityInfoRepository)
         {
             _cityInfoRepository = cityInfoRepository;
-            _mapper = mapper;
         }
 
         [HttpGet("api/cities")]
         public IActionResult GetCities()
         {
             var cityEntities = _cityInfoRepository.GetCities();
-            var results = _mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities);
+            var results = AutoMapper.Mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities);
 
             return Ok(results);
         }
@@ -40,12 +37,12 @@ namespace CityInfo.API.Controllers
 
             if (includePointsOfInterest)
             {
-                var cityResult = _mapper.Map<CityDto>(city);
+                var cityResult = AutoMapper.Mapper.Map<CityDto>(city);
                 return Ok(cityResult);
             }
             else
             {
-                var cityResult = _mapper.Map<CityWithoutPointsOfInterestDto>(city);
+                var cityResult = AutoMapper.Mapper.Map<CityWithoutPointsOfInterestDto>(city);
                 return Ok(cityResult);
             }
         }
