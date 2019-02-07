@@ -218,7 +218,7 @@ namespace CityInfo.API.Controllers
                 return NotFound();
             }
 
-            city.PointsOfInterest.Remove(poi);
+            _cityInfoRepository.DeletePointOfInterest(poi);
 
             if ( ! _cityInfoRepository.Save())
             {
